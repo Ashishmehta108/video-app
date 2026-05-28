@@ -31,11 +31,11 @@ app.use(
   cors({
     origin: "https://video-app-rosy-five.vercel.app",
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning'],
     credentials: true,
   })
 );
-app.options('*', cors()); // handle preflight for all routes
+app.options('*', cors());
 app.use(express.json());
 
 app.get('/health', (req, res) => {
