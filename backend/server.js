@@ -28,12 +28,14 @@ const io = new Server(httpServer, {
 });
 
 app.use(
- cors({
-    origin:"https://video-app-rosy-five.vercel.app",
-    methods: ['GET', 'POST'],
+  cors({
+    origin: "https://video-app-rosy-five.vercel.app",
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
-  }),
+  })
 );
+app.options('*', cors()); // handle preflight for all routes
 app.use(express.json());
 
 app.get('/health', (req, res) => {
