@@ -21,7 +21,7 @@ const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 const io = new Server(httpServer, {
   cors: {
-    origin: [frontendUrl, 'http://localhost:3000', 'https://recolor-partly-prozac.ngrok-free.dev'],
+    origin:"https://video-app-rosy-five.vercel.app",
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -29,7 +29,7 @@ const io = new Server(httpServer, {
 
 app.use(
  cors({
-    origin: [frontendUrl, 'http://localhost:3000', 'https://recolor-partly-prozac.ngrok-free.dev'],
+    origin:"https://video-app-rosy-five.vercel.app",
     methods: ['GET', 'POST'],
     credentials: true,
   }),
