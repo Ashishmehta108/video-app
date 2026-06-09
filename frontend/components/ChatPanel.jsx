@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +13,7 @@ export function ChatPanel({ socket, roomId, subgroupId = null }) {
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(true);
   const user = getStoredUser();
+  const bottomRef = useRef(null);
 
   useEffect(() => {
     if (!roomId) return;
@@ -36,6 +37,10 @@ export function ChatPanel({ socket, roomId, subgroupId = null }) {
     return () => socket.off('chat-message', onMessage);
   }, [socket, subgroupId]);
 
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   const send = (e) => {
     e.preventDefault();
     if (!text.trim()) return;
@@ -43,30 +48,53 @@ export function ChatPanel({ socket, roomId, subgroupId = null }) {
     setText('');
   };
 
+  const isOwn = (msg) => msg.userId === user?.id;
+
   return (
     <div className="flex h-full flex-col">
-      <div className="border-b border-neutral-200 px-3 py-2 text-sm font-medium">
-        {subgroupId ? 'Subgroup chat' : 'Meeting chat'}
+      <div className="border-b border-[var(--color-hairline)] px-4 py-2.5">
+        <span className="text-sm font-semibold text-[var(--color-ink)]">
+          {subgroupId ? 'Subgroup chat' : 'Meeting chat'}
+        </span>
       </div>
-      <ScrollArea className="flex-1 px-3">
-        <div className="space-y-2 py-3">
-          {loading && <p className="text-sm text-neutral-500">Loading...</p>}
+      <ScrollArea className="flex-1 px-4">
+        <div className="space-y-3 py-4">
+          {loading && (
+            <p className="animate-clay-pulse text-center text-sm text-[var(--color-muted)]">Loading messages...</p>
+          )}
+          {!loading && messages.length === 0 && (
+            <p className="text-center text-sm text-[var(--color-muted-soft)]">No messages yet. Start the conversation!</p>
+          )}
           {messages.map((m) => (
             <div
               key={m.id}
-              className={`rounded-lg px-3 py-2 text-sm ${
-                m.userId === user?.id ? 'ml-8 bg-neutral-900 text-white' : 'mr-8 bg-neutral-100'
-              }`}
+              className={`animate-clay-fade ${isOwn(m) ? 'ml-10 text-right' : 'mr-10'}`}
             >
-              <p className="text-xs font-medium opacity-70">{m.userName}</p>
-              <p>{m.content}</p>
+              <div
+                className={`inline-block rounded-[var(--rounded-lg)] px-3.5 py-2.5 text-sm ${
+                  isOwn(m)
+                    ? 'rounded-br-[var(--rounded-xs)] bg-[var(--color-brand-teal)] text-white'
+                    : 'rounded-bl-[var(--rounded-xs)] bg-[var(--color-surface-card)] text-[var(--color-ink)]'
+                }`}
+              >
+                {!isOwn(m) && (
+                  <p className="mb-0.5 text-xs font-semibold text-[var(--color-brand-teal)]">{m.userName}</p>
+                )}
+                <p className="text-left">{m.content}</p>
+              </div>
             </div>
           ))}
+          <div ref={bottomRef} />
         </div>
       </ScrollArea>
-      <form onSubmit={send} className="flex gap-2 border-t border-neutral-200 p-3">
-        <Input value={text} onChange={(e) => setText(e.target.value)} placeholder="Type a message..." />
-        <Button type="submit" size="icon">
+      <form onSubmit={send} className="flex gap-2 border-t border-[var(--color-hairline)] p-3">
+        <Input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Type a message..."
+          className="text-sm"
+        />
+        <Button type="submit" size="icon" variant="brand">
           <Send className="h-4 w-4" />
         </Button>
       </form>

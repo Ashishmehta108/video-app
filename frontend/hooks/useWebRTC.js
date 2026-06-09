@@ -12,6 +12,7 @@ export function useWebRTC(socket, roomId) {
   const [videoEnabled, setVideoEnabled] = useState(true);
   const [screenSharing, setScreenSharing] = useState(false);
   const screenStreamRef = useRef(null);
+  const hasJoinedRef = useRef(false);
 
   const updateRemoteStreams = useCallback(() => {
     const streams = [];
@@ -77,6 +78,7 @@ export function useWebRTC(socket, roomId) {
     if (!socket || !roomId) return;
 
     let mounted = true;
+    hasJoinedRef.current = false;
 
     const setup = async () => {
       try {
@@ -87,6 +89,7 @@ export function useWebRTC(socket, roomId) {
 
       if (!mounted) return;
 
+      // Register all peer event listeners FIRST
       const onRoomPeers = ({ peers }) => {
         peers.forEach((peerId) => createPeerConnection(peerId, true));
       };
@@ -121,6 +124,24 @@ export function useWebRTC(socket, roomId) {
       socket.on('user-left', onUserLeft);
       socket.on('signal', onSignal);
 
+      // NOW join the room — listeners are already attached so we won't miss room-peers
+      const joinRoom = () => {
+        if (!hasJoinedRef.current && mounted) {
+          hasJoinedRef.current = true;
+          socket.emit('join-room', { roomId });
+        }
+      };
+
+      if (socket.connected) {
+        joinRoom();
+      } else {
+        const onConnect = () => {
+          joinRoom();
+          socket.off('connect', onConnect);
+        };
+        socket.on('connect', onConnect);
+      }
+
       return () => {
         socket.off('room-peers', onRoomPeers);
         socket.off('user-joined', onUserJoined);
@@ -133,6 +154,7 @@ export function useWebRTC(socket, roomId) {
 
     return () => {
       mounted = false;
+      hasJoinedRef.current = false;
       cleanupPromise?.then?.((cleanup) => cleanup?.());
       peersRef.current.forEach(({ peer }) => peer?.destroy?.());
       peersRef.current.clear();

@@ -3,14 +3,7 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-
-const STT_STATUS_LABEL = {
-  idle: 'Idle',
-  connecting: 'Sarvam connecting…',
-  ready: 'Sarvam connected',
-  browser: 'Browser STT',
-  error: 'STT error',
-};
+import { Mic, MicOff } from 'lucide-react';
 
 const STT_MODES = [
   { value: 'transcribe', label: 'Transcribe' },
@@ -40,30 +33,46 @@ export function TranscriptPanel({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between border-b border-neutral-200 px-3 py-2">
-        <span className="text-sm font-medium">Live transcript</span>
-        <div className="flex flex-wrap items-center justify-end gap-2">
+      <div className="flex items-center justify-between border-b border-[var(--color-hairline)] px-4 py-2.5">
+        <span className="text-sm font-semibold text-[var(--color-ink)]">Live transcript</span>
+        <div className="flex items-center gap-2">
           {!supported && <Badge variant="destructive">Unavailable</Badge>}
           <Badge variant={listening ? 'success' : 'secondary'}>
-            {listening ? 'Listening' : 'Off'}
+            {listening ? (
+              <span className="flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-success)] animate-clay-pulse" />
+                Listening
+              </span>
+            ) : 'Off'}
           </Badge>
-          <Badge variant={statusVariant}>{
-          // STT_STATUS_LABEL[sttStatus] 
-          'Sarvam STT'
-          }</Badge>
+          <Badge variant={statusVariant}>Sarvam STT</Badge>
           {listening ? (
-            <Button size="sm" variant="outline" onClick={onStop}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onStop}
+              className="h-7 text-xs"
+            >
+              <MicOff className="mr-1 h-3 w-3" />
               Stop
             </Button>
           ) : (
-            <Button size="sm" variant="outline" onClick={onStart} disabled={sttStatus === 'connecting'}>
+            <Button
+              size="sm"
+              variant="brand"
+              onClick={onStart}
+              disabled={sttStatus === 'connecting'}
+              className="h-7 text-xs"
+            >
+              <Mic className="mr-1 h-3 w-3" />
               Start
             </Button>
           )}
         </div>
       </div>
+
       {onModeChange && !listening && (
-        <div className="flex gap-1 border-b border-neutral-100 px-3 py-2">
+        <div className="flex gap-1 border-b border-[var(--color-hairline)] px-4 py-2">
           {STT_MODES.map((m) => (
             <Button
               key={m.value}
@@ -77,47 +86,30 @@ export function TranscriptPanel({
           ))}
         </div>
       )}
-      <ScrollArea className="flex-1 px-3">
-        <div className="space-y-2 py-3 text-sm">
+
+      <ScrollArea className="flex-1 px-4">
+        <div className="space-y-3 py-4 text-sm">
           {!supported && (
-            <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+            <div className="rounded-[var(--rounded-md)] border border-[var(--color-brand-ochre)]/30 bg-[var(--color-brand-ochre)]/10 px-3.5 py-2.5 text-xs text-[var(--color-brand-ochre)]">
               Your browser must support mic capture and Web Audio. Sarvam handles the transcription.
+            </div>
+          )}
+          {entries.length === 0 && !interim && (
+            <p className="text-center text-sm text-[var(--color-muted-soft)]">
+              Start transcription to see live text here
             </p>
           )}
-          {/* {sttBackend === 'browser' && (
-            <p className="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-800">
-              Using browser speech recognition (Chrome/Edge recommended). Add SARVAM_API_KEY for
-              Sarvam streaming STT.
-            </p>
-          )} */}
-          {/* {sttError && (
-            <p
-              className={`rounded-md border px-3 py-2 text-xs ${
-                sttStatus === 'browser'
-                  ? 'border-amber-200 bg-amber-50 text-amber-800'
-                  : 'border-red-200 bg-red-50 text-red-800'
-              }`}
-            >
-              {sttError}
-              {sttError.includes('SARVAM_API_KEY') && (
-                <span className="mt-1 block">
-                  Set SARVAM_API_KEY in backend .env and restart the server, or use browser STT in
-                  Chrome/Edge.
-                </span>
-              )}
-            </p>
-          )} */}
           {entries.map((e) => (
-            <p key={e.id} className={e.isFinal ? '' : 'italic text-neutral-500'}>
-              <span className="font-medium">{e.userName}: </span>
-              {e.text}
-            </p>
+            <div key={e.id} className={`animate-clay-fade ${e.isFinal ? '' : 'opacity-60'}`}>
+              <span className="font-semibold text-[var(--color-brand-teal)]">{e.userName}: </span>
+              <span className="text-[var(--color-body)]">{e.text}</span>
+            </div>
           ))}
           {interim && (
-            <p className="italic text-neutral-400">
-              <span className="font-medium">Live: </span>
-              {interim}
-            </p>
+            <div className="animate-clay-pulse">
+              <span className="font-semibold text-[var(--color-brand-lavender)]">Live: </span>
+              <span className="italic text-[var(--color-muted)]">{interim}</span>
+            </div>
           )}
         </div>
       </ScrollArea>

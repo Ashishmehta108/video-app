@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { UserPlus, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function RegisterPage() {
@@ -32,36 +32,80 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center p-4">
-      <Card className="w-full max-w-md transition-shadow hover:shadow-md">
-        <CardHeader>
-          <CardTitle>Create account</CardTitle>
-          <CardDescription>Register to start hosting and joining meetings</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
-            <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            <Input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-5">
+      <div className="w-full max-w-md animate-clay-fade">
+        {/* Brand header */}
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[var(--rounded-lg)] bg-[var(--color-brand-lavender)]">
+            <UserPlus className="h-7 w-7 text-[var(--color-ink)]" />
+          </div>
+          <h1 className="text-display-sm">Create account</h1>
+          <p className="mt-2 text-sm text-[var(--color-muted)]">
+            Start hosting and joining meetings
+          </p>
+        </div>
+
+        {/* Register card */}
+        <div className="rounded-[var(--rounded-xl)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-8 shadow-[var(--shadow-card)]">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {error && (
+              <div className="rounded-[var(--rounded-sm)] border border-[#fecaca] bg-[#fef2f2] px-4 py-3 text-sm text-[#dc2626]">
+                {error}
+              </div>
+            )}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-[var(--color-ink)]">Name</label>
+              <Input
+                placeholder="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-[var(--color-ink)]">Email</label>
+              <Input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-[var(--color-ink)]">Password</label>
+              <Input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Creating account...' : 'Register'}
+              {loading ? (
+                <span className="animate-clay-pulse">Creating account...</span>
+              ) : (
+                <>
+                  Register
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
             </Button>
           </form>
-          <p className="mt-4 text-center text-sm text-neutral-500">
-            Already have an account?{' '}
-            <Link href="/login" className="font-medium text-neutral-900 hover:underline">
-              Sign in
-            </Link>
-          </p>
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Footer link */}
+        <p className="mt-6 text-center text-sm text-[var(--color-muted)]">
+          Already have an account?{' '}
+          <Link
+            href="/login"
+            className="font-medium text-[var(--color-ink)] underline decoration-[var(--color-hairline)] underline-offset-4 transition-colors hover:decoration-[var(--color-ink)]"
+          >
+            Sign in
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

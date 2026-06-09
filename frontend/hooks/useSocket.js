@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { connectSocket, disconnectSocket } from '@/lib/socket';
 
 export function useSocket(roomId) {
   const [socket, setSocket] = useState(null);
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState(null);
+  const joinedRoomRef = useRef(null);
 
   useEffect(() => {
     if (!roomId) return;
@@ -19,7 +20,6 @@ export function useSocket(roomId) {
     const onConnect = () => {
       setConnected(true);
       setError(null);
-      s.emit('join-room', { roomId });
     };
 
     const onDisconnect = () => setConnected(false);
@@ -31,8 +31,10 @@ export function useSocket(roomId) {
     s.on('connect_error', onConnectError);
     s.on('error', onSocketError);
 
-    if (s.connected) onConnect();
-    else s.connect();
+    // If already connected, fire immediately
+    if (s.connected) {
+      onConnect();
+    }
 
     return () => {
       s.off('connect', onConnect);

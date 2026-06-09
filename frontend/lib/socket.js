@@ -6,25 +6,39 @@ let socket = null;
 
 export function getSocket() {
   if (typeof window === 'undefined') return null;
+  return socket;
+}
+
+export function connectSocket() {
+  if (typeof window === 'undefined') return null;
+
+  // If there's an existing socket that's disconnected or stale, destroy it
+  if (socket && !socket.connected) {
+    socket.removeAllListeners();
+    socket = null;
+  }
+
   if (!socket) {
     socket = io(SOCKET_URL, {
       autoConnect: false,
       auth: { token: getToken() },
     });
   }
+
+  // Always refresh the auth token
+  socket.auth = { token: getToken() };
+
+  if (!socket.connected) {
+    socket.connect();
+  }
+
   return socket;
 }
 
-export function connectSocket() {
-  const s = getSocket();
-  if (!s) return null;
-  s.auth = { token: getToken() };
-  if (!s.connected) s.connect();
-  return s;
-}
-
 export function disconnectSocket() {
-  if (socket?.connected) {
+  if (socket) {
+    socket.removeAllListeners();
     socket.disconnect();
+    socket = null;
   }
 }

@@ -30,7 +30,7 @@ const io = new Server(httpServer, {
 app.use(
   cors({
     origin: "https://video-app-rosy-five.vercel.app",
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning'],
     credentials: true,
   })
