@@ -364,12 +364,12 @@ async function createSarvamSttSessionSdk({ io, socket, languageCode, sampleRate,
   const sdkSocket = await client.speechToTextStreaming.connect({
     model: 'saaras:v3',
     mode,
-    languageCode,
-    sampleRate,
-    inputAudioCodec: 'pcm_s16le',
-    highVadSensitivity: true,
-    vadSignals: true,
-    flushSignal: true,
+    'language-code': languageCode,
+    sample_rate: sampleRate,
+    input_audio_codec: 'pcm_s16le',
+    high_vad_sensitivity: true,
+    vad_signals: true,
+    flush_signal: true,
   });
 
   const session = createSessionState({
