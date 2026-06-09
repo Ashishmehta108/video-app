@@ -19,9 +19,9 @@ The application is split into two major parts that work together:
 Here is a simple flow diagram of how the User Interface and Server talk to each other:
 
 ```mermaid
-graph TD
+flowchart TB
     User([User interacts with screen]) --> UI[User Interface in Web Browser]
-    UI -- "1. Sends requests (login, create room, chat)" --> Server[Server Engine]
+    UI -- "1. Sends requests" --> Server[Server Engine]
     Server -- "2. Reads/Writes information" --> Database[(Database Storage)]
     Server -- "3. Processes and sends back updates" --> UI
 ```
@@ -60,7 +60,7 @@ When you start a video call, your camera and microphone capture your video and a
   4. Your browser connects directly to the browsers of the other participants. This direct, browser-to-browser connection allows for high-quality video and audio with minimal delay.
 
 ```mermaid
-graph TD
+flowchart TB
     subgraph Web Browser User A
         CamA[Camera and Mic] --> BrowserA[Browser A]
     end
@@ -72,7 +72,7 @@ graph TD
     BrowserA -- "1. Exchange setup details" --> Server[Server Engine]
     BrowserB -- "1. Exchange setup details" --> Server
     
-    BrowserA == "2. Direct Video and Audio Stream" ==> BrowserB
+    BrowserA == "2. Direct Stream" ==> BrowserB
 ```
 
 ### 3. Instant Chat and Messages (Socket.io)
@@ -100,7 +100,7 @@ VideoMeet can automatically convert what you say during a meeting into written t
 * **Fallback Option:** If the primary service is not available or has no key, the application uses the speech recognition feature built directly into your web browser to generate the text.
 
 ```mermaid
-graph LR
+flowchart LR
     User([User Speaks]) --> Browser[Web Browser]
     Browser -- "Audio Stream" --> Server[Server Engine]
     Server -- "Audio Stream" --> Sarvam[Sarvam Service]
@@ -115,7 +115,7 @@ The application includes an artificial intelligence assistant to help you during
 * **Generating Answers:** The Server reads the live meeting transcript and database information, sends it to the AI engine, and returns a clear answer to your screen.
 
 ```mermaid
-graph TD
+flowchart TB
     User[User asks question] --> UI[User Interface]
     UI --> Server[Server Engine]
     Server --> TranscriptDB[(Meeting Transcript DB)]
