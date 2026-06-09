@@ -38,7 +38,6 @@ When you log in or register, the application ensures your information is verifie
 * **Registration:** You input your name, email, and password. The User Interface sends this to the Server, which securely scrambles the password and stores it in the Database.
 * **Logging In:** The Server checks your credentials. If correct, it generates a secure digital key (token) and sends it to your browser. Your browser saves this key and sends it with every future request to prove who you are.
 
-
 ```mermaid
 sequenceDiagram
     participant Browser as Web Browser
@@ -46,9 +45,9 @@ sequenceDiagram
     participant DB as Database
     
     Browser->>Server: User enters login credentials
-    Server->>DB: Check email & password
+    Server->>DB: Check if email exists and password matches
     DB-->>Server: User verified
-    Server-->>Browser: Send secure token
+    Server-->>Browser: Send back secure digital key
 ```
 
 ### 2. Video and Audio Connections (WebRTC)
@@ -89,9 +88,9 @@ sequenceDiagram
     participant DB as Database
     participant UserB as User B Browser
     
-    UserA->>Server: Send message
-    Server->>DB: Save message
-    Server->>UserB: Push message
+    UserA->>Server: Send chat message
+    Server->>DB: Save message to history
+    Server->>UserB: Push message immediately
 ```
 
 ### 4. Live Transcripts (Voice-to-Text)
